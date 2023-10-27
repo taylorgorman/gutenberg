@@ -5,7 +5,7 @@ import { __ } from '@wordpress/i18n';
 import { Button } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { privateApis as routerPrivateApis } from '@wordpress/router';
-import { store as coreStore } from '@wordpress/core-data';
+import { store as coreStore, useEntityProp } from '@wordpress/core-data';
 import { parse, serialize } from '@wordpress/blocks';
 /**
  * Internal dependencies
@@ -17,6 +17,13 @@ const { useHistory } = unlock( routerPrivateApis );
 export default function EditOverlayButton( { navRef } ) {
 	// TODO: get the slug of the currently active theme
 	const themeSlug = 'emptytheme';
+
+	const [ navTitle ] = useEntityProp(
+		'postType',
+		'wp_navigation',
+		'title',
+		navRef
+	);
 
 	// get the template part with the slug navigation-overlay
 	const { baseOverlay, customOverlay } = useSelect(
@@ -88,7 +95,7 @@ export default function EditOverlayButton( { navRef } ) {
 					'wp_template_part',
 					{
 						slug: `${ baseOverlay?.slug }-${ navRef }`,
-						title: `Navigation Overlay ${ navRef }`,
+						title: `Navigation Overlay for ${ navTitle }`,
 						content: serialize( parsedBlocks ),
 						area: 'navigation-overlay',
 					},
