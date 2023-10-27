@@ -1,4 +1,4 @@
-/*
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -6,7 +6,7 @@ import { Button } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { privateApis as routerPrivateApis } from '@wordpress/router';
 import { store as coreStore } from '@wordpress/core-data';
-
+import { parse, serialize } from '@wordpress/blocks';
 /**
  * Internal dependencies
  */
@@ -44,6 +44,13 @@ export default function EditOverlayButton( { navRef } ) {
 	const { saveEntityRecord } = useDispatch( coreStore );
 	const history = useHistory();
 
+	function findNavigationBlock( blocks ) {
+		// get the block dynamically via recusion
+		// as the template part block structure
+		// may not be simple.
+		return blocks[ 0 ].innerBlocks[ 0 ];
+	}
+
 	if ( ! baseOverlay && ! customOverlay ) {
 		return null;
 	}
@@ -65,6 +72,15 @@ export default function EditOverlayButton( { navRef } ) {
 					return;
 				}
 
+				const parsedBlocks = parse( baseOverlay.content.raw );
+				const overlayNavBlock = findNavigationBlock( parsedBlocks );
+
+				// Update the Navigation block in the overlay to use
+				// the same ref as the parent block.
+				// Todo: what happens if ref doesn't exist?
+				// Should we copy the uncontrolled inner blocks?
+				overlayNavBlock.attributes.ref = navRef;
+
 				// No overlay - create one from base template.
 				// TODO: catch and handle errors.
 				const newOverlay = await saveEntityRecord(
@@ -73,7 +89,7 @@ export default function EditOverlayButton( { navRef } ) {
 					{
 						slug: `${ baseOverlay?.slug }-${ navRef }`,
 						title: `Navigation Overlay ${ navRef }`,
-						content: baseOverlay?.content?.raw,
+						content: serialize( parsedBlocks ),
 						area: 'navigation-overlay',
 					},
 					{ throwOnError: true }
