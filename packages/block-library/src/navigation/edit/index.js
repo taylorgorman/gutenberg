@@ -73,8 +73,7 @@ import DeletedNavigationWarning from './deleted-navigation-warning';
 import AccessibleDescription from './accessible-description';
 import AccessibleMenuDescription from './accessible-menu-description';
 import { unlock } from '../../lock-unlock';
-import { privateApis as routerPrivateApis } from '@wordpress/router';
-const { useHistory } = unlock( routerPrivateApis );
+import EditOverlayButton from './edit-overlay-button';
 
 function Navigation( {
 	attributes,
@@ -119,8 +118,6 @@ function Navigation( {
 		},
 		[ setAttributes ]
 	);
-
-	const history = useHistory();
 
 	const recursionId = `navigationMenu/${ ref }`;
 	const hasAlreadyRendered = useHasRecursion( recursionId );
@@ -566,23 +563,7 @@ function Navigation( {
 							</>
 						) }
 						<h3>{ __( 'Overlay Menu' ) }</h3>
-						<Button
-							varqiant="secondary"
-							onClick={ ( event ) => {
-								event.preventDefault();
-
-								// 1. get the slug of the currently active theme
-								const themeSlug = 'emptytheme';
-								// 2. Redirect to template editor
-								history.push( {
-									postId: `${ themeSlug }//navigation-overlay`,
-									postType: 'wp_template_part',
-									canvas: 'edit',
-								} );
-							} }
-						>
-							{ __( 'Edit Overlay' ) }
-						</Button>
+						<EditOverlayButton navRef={ ref } />
 						<ToggleGroupControl
 							__nextHasNoMarginBottom
 							label={ __( 'Configure overlay menu' ) }
