@@ -56,10 +56,14 @@ export default function EditOverlayButton( { navRef } ) {
 	const history = useHistory();
 
 	function findNavigationBlock( blocks ) {
-		// get the block dynamically via recusion
-		// as the template part block structure
-		// may not be simple.
-		return blocks[ 0 ].innerBlocks[ 0 ];
+		const block = blocks[ 0 ];
+		if ( block.name === 'core/navigation' ) {
+			return block;
+		}
+		if ( block.innerBlocks.length ) {
+			return findNavigationBlock( block.innerBlocks );
+		}
+		return null;
 	}
 
 	if ( ! history && ! baseOverlay && ! customOverlay ) {
