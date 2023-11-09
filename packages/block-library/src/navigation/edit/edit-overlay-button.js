@@ -26,7 +26,7 @@ export default function EditOverlayButton( { navRef } ) {
 	const { baseOverlay, customOverlay } = useSelect(
 		( select ) => {
 			const themeSlug = select( coreStore ).getCurrentTheme()?.stylesheet;
-			console.log( 'themeSlug', themeSlug );
+
 			const _baseOverlay = themeSlug
 				? select( coreStore ).getEntityRecord(
 						'postType',
@@ -66,6 +66,14 @@ export default function EditOverlayButton( { navRef } ) {
 		return null;
 	}
 
+	function goToEditOverlay( overlayId ) {
+		history.push( {
+			postId: overlayId,
+			postType: 'wp_template_part',
+			canvas: 'edit',
+		} );
+	}
+
 	if ( ! history && ! baseOverlay && ! customOverlay ) {
 		return null;
 	}
@@ -79,11 +87,7 @@ export default function EditOverlayButton( { navRef } ) {
 				// If there is an overlay already
 				// then just show it.
 				if ( customOverlay ) {
-					history.push( {
-						postId: customOverlay.id,
-						postType: 'wp_template_part',
-						canvas: 'edit',
-					} );
+					goToEditOverlay( customOverlay.id );
 					return;
 				}
 
@@ -110,12 +114,7 @@ export default function EditOverlayButton( { navRef } ) {
 					{ throwOnError: true }
 				);
 
-				// 2. Redirect to template editor
-				history.push( {
-					postId: newOverlay.id,
-					postType: 'wp_template_part',
-					canvas: 'edit',
-				} );
+				goToEditOverlay( newOverlay );
 			} }
 		>
 			{ __( 'Edit Overlay' ) }
