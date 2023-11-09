@@ -15,9 +15,6 @@ import { unlock } from '../../lock-unlock';
 const { useHistory } = unlock( routerPrivateApis );
 
 export default function EditOverlayButton( { navRef } ) {
-	// TODO: get the slug of the currently active theme
-	const themeSlug = 'emptytheme';
-
 	const [ navTitle ] = useEntityProp(
 		'postType',
 		'wp_navigation',
@@ -28,17 +25,23 @@ export default function EditOverlayButton( { navRef } ) {
 	// get the template part with the slug navigation-overlay
 	const { baseOverlay, customOverlay } = useSelect(
 		( select ) => {
-			const _baseOverlay = select( coreStore ).getEntityRecord(
-				'postType',
-				'wp_template_part',
-				`${ themeSlug }//navigation-overlay`
-			);
+			const themeSlug = select( coreStore ).getCurrentTheme()?.stylesheet;
+			console.log( 'themeSlug', themeSlug );
+			const _baseOverlay = themeSlug
+				? select( coreStore ).getEntityRecord(
+						'postType',
+						'wp_template_part',
+						`${ themeSlug }//navigation-overlay`
+				  )
+				: null;
 
-			const _customOverlay = select( coreStore ).getEntityRecord(
-				'postType',
-				'wp_template_part',
-				`${ themeSlug }//navigation-overlay-${ navRef }`
-			);
+			const _customOverlay = themeSlug
+				? select( coreStore ).getEntityRecord(
+						'postType',
+						'wp_template_part',
+						`${ themeSlug }//navigation-overlay-${ navRef }`
+				  )
+				: null;
 
 			return {
 				baseOverlay: _baseOverlay,
@@ -49,6 +52,7 @@ export default function EditOverlayButton( { navRef } ) {
 	);
 
 	const { saveEntityRecord } = useDispatch( coreStore );
+
 	const history = useHistory();
 
 	function findNavigationBlock( blocks ) {
@@ -58,7 +62,7 @@ export default function EditOverlayButton( { navRef } ) {
 		return blocks[ 0 ].innerBlocks[ 0 ];
 	}
 
-	if ( ! baseOverlay && ! customOverlay ) {
+	if ( ! history && ! baseOverlay && ! customOverlay ) {
 		return null;
 	}
 
