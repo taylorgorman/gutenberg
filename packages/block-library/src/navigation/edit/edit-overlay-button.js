@@ -115,7 +115,7 @@ export default function EditOverlayButton( { navRef } ) {
 					{ throwOnError: true }
 				);
 
-				goToEditOverlay( newOverlay );
+				goToEditOverlay( newOverlay?.id );
 			} }
 		>
 			{ __( 'Edit' ) }
