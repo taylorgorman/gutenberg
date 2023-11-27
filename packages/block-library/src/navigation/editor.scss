@@ -645,3 +645,11 @@ body.editor-styles-wrapper .wp-block-navigation__responsive-container.is-menu-op
 .wp-block-navigation__menu-inspector-controls__empty-message {
 	margin-left: 24px;
 }
+
+.wp-block-navigation__menu-inspector-controls__overlay-menu {
+	margin-bottom: $grid-unit-20;
+
+	.wp-block-navigation__menu-inspector-controls__overlay-menu-heading {
+		margin-bottom: 0;
+	}
+}

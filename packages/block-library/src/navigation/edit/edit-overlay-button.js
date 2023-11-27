@@ -80,7 +80,8 @@ export default function EditOverlayButton( { navRef } ) {
 
 	return (
 		<Button
-			varqiant="secondary"
+			aria-label={ __( 'Edit Overlay' ) }
+			variant="link"
 			onClick={ async ( event ) => {
 				event.preventDefault();
 
@@ -117,7 +118,7 @@ export default function EditOverlayButton( { navRef } ) {
 				goToEditOverlay( newOverlay );
 			} }
 		>
-			{ __( 'Edit Overlay' ) }
+			{ __( 'Edit' ) }
 		</Button>
 	);
 }
