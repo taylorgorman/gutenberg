@@ -75,6 +75,7 @@ import AccessibleDescription from './accessible-description';
 import AccessibleMenuDescription from './accessible-menu-description';
 import { unlock } from '../../lock-unlock';
 import EditOverlayButton from './edit-overlay-button';
+import useIsWithinOverlay from './use-is-within-overlay';
 
 function Navigation( {
 	attributes,
@@ -124,6 +125,8 @@ function Navigation( {
 	const hasAlreadyRendered = useHasRecursion( recursionId );
 
 	const blockEditingMode = useBlockEditingMode();
+
+	const hideOverlayControls = useIsWithinOverlay();
 
 	// Preload classic menus, so that they don't suddenly pop-in when viewing
 	// the Select Menu dropdown.
@@ -563,38 +566,43 @@ function Navigation( {
 								</div>
 							</>
 						) }
-						<HStack className="wp-block-navigation__menu-inspector-controls__overlay-menu">
-							<h3 className="wp-block-navigation__menu-inspector-controls__overlay-menu-heading">
-								{ __( 'Overlay Menu' ) }
-							</h3>
-							<EditOverlayButton navRef={ ref } />
-						</HStack>
-						<ToggleGroupControl
-							__nextHasNoMarginBottom
-							label={ __( 'Configure overlay menu' ) }
-							value={ overlayMenu }
-							help={ __(
-								'Collapses the navigation options in a menu icon opening an overlay.'
-							) }
-							onChange={ ( value ) =>
-								setAttributes( { overlayMenu: value } )
-							}
-							isBlock
-							hideLabelFromVision
-						>
-							<ToggleGroupControlOption
-								value="never"
-								label={ __( 'Off' ) }
-							/>
-							<ToggleGroupControlOption
-								value="mobile"
-								label={ __( 'Mobile' ) }
-							/>
-							<ToggleGroupControlOption
-								value="always"
-								label={ __( 'Always' ) }
-							/>
-						</ToggleGroupControl>
+
+						{ ! hideOverlayControls && (
+							<>
+								<HStack className="wp-block-navigation__menu-inspector-controls__overlay-menu">
+									<h3 className="wp-block-navigation__menu-inspector-controls__overlay-menu-heading">
+										{ __( 'Overlay Menu' ) }
+									</h3>
+									<EditOverlayButton navRef={ ref } />
+								</HStack>
+								<ToggleGroupControl
+									__nextHasNoMarginBottom
+									label={ __( 'Configure overlay menu' ) }
+									value={ overlayMenu }
+									help={ __(
+										'Collapses the navigation options in a menu icon opening an overlay.'
+									) }
+									onChange={ ( value ) =>
+										setAttributes( { overlayMenu: value } )
+									}
+									isBlock
+									hideLabelFromVision
+								>
+									<ToggleGroupControlOption
+										value="never"
+										label={ __( 'Off' ) }
+									/>
+									<ToggleGroupControlOption
+										value="mobile"
+										label={ __( 'Mobile' ) }
+									/>
+									<ToggleGroupControlOption
+										value="always"
+										label={ __( 'Always' ) }
+									/>
+								</ToggleGroupControl>
+							</>
+						) }
 						{ hasSubmenus && (
 							<>
 								<h3>{ __( 'Submenus' ) }</h3>
