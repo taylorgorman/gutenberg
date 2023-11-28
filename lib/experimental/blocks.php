@@ -198,3 +198,18 @@ if ( $gutenberg_experiments && (
 
 	add_filter( 'render_block', 'gutenberg_render_block_connections', 10, 3 );
 }
+
+
+function add_navigation_overlay_area( $areas ) {
+	$areas[] = array(
+		'area'        => 'navigation-overlay',
+		'label'       => _x( 'Navigation Overlay', 'template part area' ),
+		'description' => __(
+			'An area for navigation overlay content.'
+		),
+		'area_tag'    => 'section',
+		'icon'        => 'handle',
+	);
+	return $areas;
+}
+add_filter( 'default_wp_template_part_areas', 'add_navigation_overlay_area', 10, 1 );
