@@ -36,19 +36,15 @@ export default function EditOverlayButton( { navRef } ) {
 		( select ) => {
 			const themeSlug = select( coreStore ).getCurrentTheme()?.stylesheet;
 
-			let _baseOverlay = themeSlug
+			// Try for overlay provided by Theme (falling back to default
+			// provided by Core).
+			const _baseOverlay = themeSlug
 				? select( coreStore ).getEntityRecord(
 						'postType',
 						'wp_template_part',
 						`${ themeSlug }//navigation-overlay`
 				  )
 				: null;
-
-			// Try for Overlay provided by Theme and fallback to a default
-			// overlay if none is provided.
-			if ( ! _baseOverlay ) {
-				_baseOverlay = DEFAULT_NAVIGATION_OVERLAY;
-			}
 
 			const _customOverlay = themeSlug
 				? select( coreStore ).getEntityRecord(

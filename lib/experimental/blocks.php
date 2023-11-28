@@ -213,3 +213,60 @@ function add_navigation_overlay_area( $areas ) {
 	return $areas;
 }
 add_filter( 'default_wp_template_part_areas', 'add_navigation_overlay_area', 10, 1 );
+
+
+function add_default_navigation_overlay_template_part( $block_template, $id, $template_type ) {
+
+
+
+
+	// if the template type is not template part, return the block template
+	if ( 'wp_template_part' !== $template_type ) {
+		return $block_template;
+	}
+
+
+	$theme                  = get_stylesheet();
+
+
+	// if the $id is not in the format of '$theme//navigation-overlay', return the block template
+
+	// Must be exact otherwise will match for '${theme}//navigation-overlay-${navRef}'
+	if ( $id !== $theme . '//navigation-overlay' ) {
+		return $block_template;
+	}
+
+	// If the block template is not empty, return the "found" block template.
+	// Failure to do this will override any "found" overlay template part from the Theme.
+	if ( ! empty( $block_template ) ) {
+		return $block_template;
+	}
+
+
+	// Return a default template part for the Navigation Overlay.
+	// This is essentially a "Core" fallback in case the Theme does not provide one.
+	$template                 = new WP_Block_Template();
+
+	// TODO: should we provide "$theme" here at all as this is a "Core" template.
+	$template->id             = $theme . '//' . 'navigation-overlay';
+	$template->theme          = $theme;
+	$template->slug           = 'navigation-overlay';
+	$template->source         = 'core';
+	$template->type           = 'template-part';
+	$template->title          = 'Navigation Overlay (Core)';
+	$template->status         = 'publish';
+	$template->has_theme_file = false;
+	$template->is_custom      = false;
+	$template->modified       = null;
+
+
+	// TODO - get contents from a file called 'navigation-overlay.html` somewhere in this directory.
+	$template->content        = '<!-- wp:group {"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+<div class="wp-block-group"><!-- wp:navigation {"layout":{"type":"flex","orientation":"vertical","justifyContent":"left"}} /--></div>
+<!-- /wp:group -->';
+
+
+	return $template;
+}
+
+add_filter('get_block_file_template', 'add_default_navigation_overlay_template_part', 10, 3);
