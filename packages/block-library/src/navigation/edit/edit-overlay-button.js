@@ -77,12 +77,57 @@ export default function EditOverlayButton( { navRef } ) {
 		return null;
 	}
 
-	function goToEditOverlay( overlayId ) {
+	function goToOverlayEditor( overlayId ) {
 		history.push( {
 			postId: overlayId,
 			postType: 'wp_template_part',
 			canvas: 'edit',
 		} );
+	}
+
+	async function handleEditOverlay( event ) {
+		event.preventDefault();
+
+		// If there is already a Custom Overlay for this Navigation Menu
+		// the go to the editor for that overlay template part.
+		if ( customOverlay ) {
+			goToOverlayEditor( customOverlay.id );
+			return;
+		}
+
+		// No custom overoverlay - create one from base template.
+		// TODO: catch and handle errors.
+		const overlayBlocks = buildOverlayBlocks( baseOverlay, navRef );
+		const newOverlay = await createCustomOverlay( overlayBlocks );
+
+		goToOverlayEditor( newOverlay?.id );
+		return;
+	}
+
+	function buildOverlayBlocks( baseOverlay, navRef ) {
+		const parsedBlocks = parse( baseOverlay.content.raw );
+		const overlayNavBlock = findNavigationBlock( parsedBlocks );
+
+		// Update the Navigation block in the overlay to use
+		// the same ref as the parent block.
+		// Todo: what happens if ref doesn't exist?
+		// Should we copy the uncontrolled inner blocks?
+		overlayNavBlock.attributes.ref = navRef;
+		return parsedBlocks;
+	}
+
+	async function createCustomOverlay( overlayBlocks ) {
+		return await saveEntityRecord(
+			'postType',
+			'wp_template_part',
+			{
+				slug: `${ baseOverlay?.slug }-${ navRef }`,
+				title: `Navigation Overlay for ${ navTitle }`,
+				content: serialize( overlayBlocks ),
+				area: 'navigation-overlay',
+			},
+			{ throwOnError: true }
+		);
 	}
 
 	if ( ! history && ! baseOverlay && ! customOverlay ) {
@@ -93,41 +138,7 @@ export default function EditOverlayButton( { navRef } ) {
 		<Button
 			aria-label={ __( 'Edit Overlay' ) }
 			variant="link"
-			onClick={ async ( event ) => {
-				event.preventDefault();
-
-				// If there is an overlay already
-				// then just show it.
-				if ( customOverlay ) {
-					goToEditOverlay( customOverlay.id );
-					return;
-				}
-
-				const parsedBlocks = parse( baseOverlay.content.raw );
-				const overlayNavBlock = findNavigationBlock( parsedBlocks );
-
-				// Update the Navigation block in the overlay to use
-				// the same ref as the parent block.
-				// Todo: what happens if ref doesn't exist?
-				// Should we copy the uncontrolled inner blocks?
-				overlayNavBlock.attributes.ref = navRef;
-
-				// No overlay - create one from base template.
-				// TODO: catch and handle errors.
-				const newOverlay = await saveEntityRecord(
-					'postType',
-					'wp_template_part',
-					{
-						slug: `${ baseOverlay?.slug }-${ navRef }`,
-						title: `Navigation Overlay for ${ navTitle }`,
-						content: serialize( parsedBlocks ),
-						area: 'navigation-overlay',
-					},
-					{ throwOnError: true }
-				);
-
-				goToEditOverlay( newOverlay?.id );
-			} }
+			onClick={ handleEditOverlay }
 		>
 			{ __( 'Edit' ) }
 		</Button>
