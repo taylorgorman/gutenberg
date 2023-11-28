@@ -14,6 +14,15 @@ import { unlock } from '../../lock-unlock';
 
 const { useHistory } = unlock( routerPrivateApis );
 
+const DEFAULT_NAVIGATION_OVERLAY = {
+	slug: 'navigation-overlay',
+	content: {
+		raw: `<!-- wp:group {"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+<div class="wp-block-group"><!-- wp:navigation {"layout":{"type":"flex","orientation":"vertical","justifyContent":"left"}} /--></div>
+<!-- /wp:group -->`,
+	},
+};
+
 export default function EditOverlayButton( { navRef } ) {
 	const [ navTitle ] = useEntityProp(
 		'postType',
@@ -27,13 +36,19 @@ export default function EditOverlayButton( { navRef } ) {
 		( select ) => {
 			const themeSlug = select( coreStore ).getCurrentTheme()?.stylesheet;
 
-			const _baseOverlay = themeSlug
+			let _baseOverlay = themeSlug
 				? select( coreStore ).getEntityRecord(
 						'postType',
 						'wp_template_part',
 						`${ themeSlug }//navigation-overlay`
 				  )
 				: null;
+
+			// Try for Overlay provided by Theme and fallback to a default
+			// overlay if none is provided.
+			if ( ! _baseOverlay ) {
+				_baseOverlay = DEFAULT_NAVIGATION_OVERLAY;
+			}
 
 			const _customOverlay = themeSlug
 				? select( coreStore ).getEntityRecord(
