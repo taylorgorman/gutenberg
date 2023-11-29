@@ -458,7 +458,7 @@ class WP_Navigation_Block_Renderer {
 		$custom_overlay_html = static::get_custom_overlay_blocks_html( $attributes );
 
 		if ( ! empty( $custom_overlay_html ) ) {
-			$custom_overlay_inner_blocks = '<div class="wp-block-navigation__custom-overlay">' . $custom_overlay_html . '</div>';
+			$custom_overlay_inner_blocks = '<div class="wp-block-navigation__overlay">' . $custom_overlay_html . '</div>';
 		} else {
 			$custom_overlay_inner_blocks = '';
 		}
@@ -473,9 +473,7 @@ class WP_Navigation_Block_Renderer {
 								<div class="wp-block-navigation__default">
 									%2$s
 								</div>
-								<div class="wp-block-navigation__overlay">
-									%14$s
-								</div>
+								%14$s
 							</div>
 						</div>
 					</div>
