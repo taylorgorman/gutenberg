@@ -757,15 +757,17 @@ html.has-modal-open {
 
 
 .wp-block-navigation__overlay {
-	@include break-medium() {
-		display: none;
-	}
+	display: none;
+	width: 100%; // fill the overlay
+	height: 100%; // fill the overlay
 }
 
-.wp-block-navigation__default {
-	display: none;
-
-	@include break-medium() {
+.is-menu-open {
+	.wp-block-navigation__overlay {
 		display: initial;
+	}
+
+	.wp-block-navigation__default {
+		display: none;
 	}
 }
