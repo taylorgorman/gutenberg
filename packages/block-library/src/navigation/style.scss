@@ -754,3 +754,18 @@ button.wp-block-navigation-item__content {
 html.has-modal-open {
 	overflow: hidden;
 }
+
+
+.wp-block-navigation__overlay {
+	@include break-medium() {
+		display: none;
+	}
+}
+
+.wp-block-navigation__default {
+	display: none;
+
+	@include break-medium() {
+		display: initial;
+	}
+}

@@ -89,6 +89,9 @@ class WP_Navigation_Block_Renderer {
 	 * @return bool Returns whether or not to load the view script.
 	 */
 	private static function should_load_view_script( $attributes, $inner_blocks ) {
+
+		// TODO - determine why this is returning false????
+		return true;
 		$has_submenus       = static::has_submenus( $inner_blocks );
 		$is_responsive_menu = static::is_responsive( $attributes );
 		return ( $has_submenus && ( $attributes['openSubmenusOnClick'] || $attributes['showSubmenuIcon'] ) ) || $is_responsive_menu;
@@ -183,6 +186,7 @@ class WP_Navigation_Block_Renderer {
 	 * @return WP_Block_List Returns the inner blocks for the navigation block.
 	 */
 	private static function get_inner_blocks_from_navigation_post( $attributes ) {
+
 		$navigation_post = get_post( $attributes['ref'] );
 		if ( ! isset( $navigation_post ) ) {
 			return '';
@@ -451,6 +455,34 @@ class WP_Navigation_Block_Renderer {
 			';
 		}
 
+
+		$theme                = get_stylesheet();
+		$custom_overlay_id    = $theme . '//' . 'navigation-overlay-' . $attributes['ref'];
+		$custom_overlay_query = new WP_Query(
+			array(
+				'post_type'           => 'wp_template_part',
+				'post_status'         => 'publish',
+				'post_name__in'       => array( 'navigation-overlay-' . $attributes['ref'] ),
+				'tax_query'           => array(
+					array(
+						'taxonomy' => 'wp_theme',
+						'field'    => 'name',
+						'terms'    => $theme,
+					),
+				),
+				'posts_per_page'      => 1,
+				'no_found_rows'       => true,
+				'lazy_load_term_meta' => false, // Do not lazy load term meta, as template parts only have one term.
+			)
+		);
+		$custom_overlay_post  = $custom_overlay_query->have_posts() ? $custom_overlay_query->next_post() : null;
+
+		$custom_overlay_inner_blocks = do_blocks($custom_overlay_post->post_content);
+
+
+
+
+
 		return sprintf(
 			'<button aria-haspopup="dialog" %3$s class="%6$s" %10$s>%8$s</button>
 				<div class="%5$s" style="%7$s" id="%1$s" %11$s>
@@ -458,7 +490,12 @@ class WP_Navigation_Block_Renderer {
 						<div class="wp-block-navigation__responsive-dialog" %12$s>
 							<button %4$s class="wp-block-navigation__responsive-container-close" %13$s>%9$s</button>
 							<div class="wp-block-navigation__responsive-container-content" id="%1$s-content">
-								%2$s
+								<div class="wp-block-navigation__default">
+									%2$s
+								</div>
+								<div class="wp-block-navigation__overlay">
+									%14$s
+								</div>
 							</div>
 						</div>
 					</div>
@@ -475,7 +512,8 @@ class WP_Navigation_Block_Renderer {
 			$open_button_directives,
 			$responsive_container_directives,
 			$responsive_dialog_directives,
-			$close_button_directives
+			$close_button_directives,
+			$custom_overlay_inner_blocks
 		);
 	}
 
@@ -612,6 +650,8 @@ class WP_Navigation_Block_Renderer {
 	 * @return string Returns the navigation block markup.
 	 */
 	public static function render( $attributes, $content, $block ) {
+
+
 		/**
 		 * Deprecated:
 		 * The rgbTextColor and rgbBackgroundColor attributes
