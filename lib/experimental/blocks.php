@@ -247,7 +247,7 @@ function add_default_navigation_overlay_template_part( $block_template, $id, $te
 	$template->slug           = 'navigation-overlay';
 	$template->source         = 'core';
 	$template->type           = 'template-part';
-	$template->title          = 'Navigation Overlay (Core)';
+	$template->title          = 'Navigation Overlay';
 	$template->status         = 'publish';
 	$template->has_theme_file = false;
 	$template->is_custom      = false;
