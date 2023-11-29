@@ -455,33 +455,13 @@ class WP_Navigation_Block_Renderer {
 			';
 		}
 
+		$custom_overlay_html = static::get_custom_overlay_blocks_html( $attributes );
 
-		$theme                = get_stylesheet();
-		$custom_overlay_id    = $theme . '//' . 'navigation-overlay-' . $attributes['ref'];
-		$custom_overlay_query = new WP_Query(
-			array(
-				'post_type'           => 'wp_template_part',
-				'post_status'         => 'publish',
-				'post_name__in'       => array( 'navigation-overlay-' . $attributes['ref'] ),
-				'tax_query'           => array(
-					array(
-						'taxonomy' => 'wp_theme',
-						'field'    => 'name',
-						'terms'    => $theme,
-					),
-				),
-				'posts_per_page'      => 1,
-				'no_found_rows'       => true,
-				'lazy_load_term_meta' => false, // Do not lazy load term meta, as template parts only have one term.
-			)
-		);
-		$custom_overlay_post  = $custom_overlay_query->have_posts() ? $custom_overlay_query->next_post() : null;
-
-		$custom_overlay_inner_blocks = do_blocks($custom_overlay_post->post_content);
-
-
-
-
+		if ( ! empty( $custom_overlay_html ) ) {
+			$custom_overlay_inner_blocks = '<div class="wp-block-navigation__custom-overlay">' . $custom_overlay_html . '</div>';
+		} else {
+			$custom_overlay_inner_blocks = '';
+		}
 
 		return sprintf(
 			'<button aria-haspopup="dialog" %3$s class="%6$s" %10$s>%8$s</button>
@@ -515,6 +495,41 @@ class WP_Navigation_Block_Renderer {
 			$close_button_directives,
 			$custom_overlay_inner_blocks
 		);
+	}
+
+
+	private static function get_custom_overlay_blocks_html( $attributes ) {
+
+		if ( empty( $attributes['ref'] ) ) {
+			return '';
+		}
+
+		$theme                = get_stylesheet();
+		$custom_overlay_id    = $theme . '//' . 'navigation-overlay-' . $attributes['ref'];
+		$custom_overlay_query = new WP_Query(
+			array(
+				'post_type'           => 'wp_template_part',
+				'post_status'         => 'publish',
+				'post_name__in'       => array( 'navigation-overlay-' . $attributes['ref'] ),
+				'tax_query'           => array(
+					array(
+						'taxonomy' => 'wp_theme',
+						'field'    => 'name',
+						'terms'    => $theme,
+					),
+				),
+				'posts_per_page'      => 1,
+				'no_found_rows'       => true,
+				'lazy_load_term_meta' => false, // Do not lazy load term meta, as template parts only have one term.
+			)
+		);
+		$custom_overlay_post  = $custom_overlay_query->have_posts() ? $custom_overlay_query->next_post() : null;
+
+		if ( empty( $custom_overlay_post ) ) {
+			return '';
+		}
+
+		return do_blocks( $custom_overlay_post->post_content );
 	}
 
 	/**
@@ -650,7 +665,6 @@ class WP_Navigation_Block_Renderer {
 	 * @return string Returns the navigation block markup.
 	 */
 	public static function render( $attributes, $content, $block ) {
-
 
 		/**
 		 * Deprecated:
