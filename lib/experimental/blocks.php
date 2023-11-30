@@ -254,7 +254,7 @@ function add_default_navigation_overlay_template_part( $block_template, $id, $te
 	$template->modified       = null;
 
 	// TODO - get contents from a file called 'navigation-overlay.html` somewhere in this directory.
-	$template->content = '<!-- wp:group {"metadata":{"name":"Overlay"},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
+	$template->content = '<!-- wp:group {"lock":{"move":true,"remove":true},"metadata":{"name":"Overlay"},"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
 <div class="wp-block-group"><!-- wp:navigation {"overlayMenu":"never","layout":{"type":"flex","orientation":"vertical","justifyContent":"left"}} /--></div>
 <!-- /wp:group -->';
 
