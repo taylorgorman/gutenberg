@@ -9,6 +9,7 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { useRef } from '@wordpress/element';
 import { BlockTools, store as blockEditorStore } from '@wordpress/block-editor';
 import { useViewportMatch, useResizeObserver } from '@wordpress/compose';
+import { useEntityProp } from '@wordpress/core-data';
 
 /**
  * Internal dependencies
@@ -25,6 +26,11 @@ import {
 } from '../../utils/constants';
 import { unlock } from '../../lock-unlock';
 import PageContentFocusNotifications from '../page-content-focus-notifications';
+
+function useIsNavigationOverlay() {
+	const [ area ] = useEntityProp( 'postType', 'wp_template_part', 'area' );
+	return area === 'navigation-overlay';
+}
 
 export default function SiteEditorCanvas() {
 	const { clearSelectedBlock } = useDispatch( blockEditorStore );
@@ -43,6 +49,8 @@ export default function SiteEditorCanvas() {
 		};
 	}, [] );
 
+	const isNavigationOverlayTemplate = useIsNavigationOverlay();
+
 	const [ resizeObserver, sizes ] = useResizeObserver();
 
 	const settings = useSiteEditorSettings();
@@ -57,7 +65,9 @@ export default function SiteEditorCanvas() {
 	const contentRef = useRef();
 	const isTemplateTypeNavigation = templateType === NAVIGATION_POST_TYPE;
 	const isNavigationFocusMode = isTemplateTypeNavigation && isFocusMode;
-	const forceFullHeight = isNavigationFocusMode;
+
+	const forceFullHeight =
+		isNavigationFocusMode || isNavigationOverlayTemplate;
 
 	return (
 		<>
