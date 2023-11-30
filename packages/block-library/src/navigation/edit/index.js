@@ -76,6 +76,8 @@ import AccessibleMenuDescription from './accessible-menu-description';
 import { unlock } from '../../lock-unlock';
 import EditOverlayButton from './edit-overlay-button';
 import useIsWithinOverlay from './use-is-within-overlay';
+import useGoToOverlayEditor from './use-go-to-overlay-editor';
+import useCustomOverlay from './use-custom-overlay';
 
 function Navigation( {
 	attributes,
@@ -127,6 +129,11 @@ function Navigation( {
 	const blockEditingMode = useBlockEditingMode();
 
 	const hideOverlayControls = useIsWithinOverlay();
+
+	const customOverlay = useCustomOverlay( ref );
+	const goToOverlayEditor = useGoToOverlayEditor();
+
+	const hasCustomOverlay = !! customOverlay;
 
 	// Preload classic menus, so that they don't suddenly pop-in when viewing
 	// the Select Menu dropdown.
@@ -356,6 +363,17 @@ function Navigation( {
 
 	const onSelectNavigationMenu = ( menuId ) => {
 		handleUpdateMenu( menuId );
+	};
+
+	const onToggleOverlayMenu = ( _toggleVal ) => {
+		if ( hasCustomOverlay && _toggleVal ) {
+			// If there is a Custom Overlay and the user is trying to open the menu
+			// then edit the overlay template part.
+			goToOverlayEditor( customOverlay?.id );
+		} else {
+			// Otherwise just toggle the default overlay witin the editor.
+			setResponsiveMenuVisibility( _toggleVal );
+		}
 	};
 
 	useEffect( () => {
@@ -738,7 +756,7 @@ function Navigation( {
 				{ blockEditingMode === 'default' && stylingInspectorControls }
 				<ResponsiveWrapper
 					id={ clientId }
-					onToggle={ setResponsiveMenuVisibility }
+					onToggle={ onToggleOverlayMenu }
 					isOpen={ isResponsiveMenuOpen }
 					hasIcon={ hasIcon }
 					icon={ icon }
@@ -898,7 +916,7 @@ function Navigation( {
 						/>
 						<ResponsiveWrapper
 							id={ clientId }
-							onToggle={ setResponsiveMenuVisibility }
+							onToggle={ onToggleOverlayMenu }
 							hasIcon={ hasIcon }
 							icon={ icon }
 							isOpen={ isResponsiveMenuOpen }

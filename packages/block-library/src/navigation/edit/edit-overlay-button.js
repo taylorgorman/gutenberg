@@ -11,17 +11,10 @@ import { parse, serialize } from '@wordpress/blocks';
  * Internal dependencies
  */
 import { unlock } from '../../lock-unlock';
+import useGoToOverlayEditor from './use-go-to-overlay-editor';
+import useCustomOverlay from './use-custom-overlay';
 
 const { useHistory } = unlock( routerPrivateApis );
-
-const DEFAULT_NAVIGATION_OVERLAY = {
-	slug: 'navigation-overlay',
-	content: {
-		raw: `<!-- wp:group {"layout":{"type":"flex","orientation":"vertical","justifyContent":"center"}} -->
-<div class="wp-block-group"><!-- wp:navigation {"layout":{"type":"flex","orientation":"vertical","justifyContent":"left"}} /--></div>
-<!-- /wp:group -->`,
-	},
-};
 
 export default function EditOverlayButton( { navRef } ) {
 	const [ navTitle ] = useEntityProp(
@@ -31,40 +24,33 @@ export default function EditOverlayButton( { navRef } ) {
 		navRef
 	);
 
-	// get the template part with the slug navigation-overlay
-	const { baseOverlay, customOverlay } = useSelect(
-		( select ) => {
-			const themeSlug = select( coreStore ).getCurrentTheme()?.stylesheet;
+	// Get any custom overlay with the slug `navigation-overlay-${navRef}`.
+	const customOverlay = useCustomOverlay( navRef );
 
-			// Try for overlay provided by Theme (falling back to default
-			// provided by Core).
-			const _baseOverlay = themeSlug
-				? select( coreStore ).getEntityRecord(
-						'postType',
-						'wp_template_part',
-						`${ themeSlug }//navigation-overlay`
-				  )
-				: null;
+	// Get the fallback template part with the slug `navigation-overlay`.
+	const { baseOverlay } = useSelect( ( select ) => {
+		const themeSlug = select( coreStore ).getCurrentTheme()?.stylesheet;
 
-			const _customOverlay = themeSlug
-				? select( coreStore ).getEntityRecord(
-						'postType',
-						'wp_template_part',
-						`${ themeSlug }//navigation-overlay-${ navRef }`
-				  )
-				: null;
+		// Try for overlay provided by Theme (falling back to default
+		// provided by Core).
+		const _baseOverlay = themeSlug
+			? select( coreStore ).getEntityRecord(
+					'postType',
+					'wp_template_part',
+					`${ themeSlug }//navigation-overlay`
+			  )
+			: null;
 
-			return {
-				baseOverlay: _baseOverlay,
-				customOverlay: _customOverlay,
-			};
-		},
-		[ navRef ]
-	);
+		return {
+			baseOverlay: _baseOverlay,
+		};
+	}, [] );
 
 	const { saveEntityRecord } = useDispatch( coreStore );
 
 	const history = useHistory();
+
+	const goToOverlayEditor = useGoToOverlayEditor();
 
 	function findNavigationBlock( blocks ) {
 		const block = blocks[ 0 ];
@@ -75,14 +61,6 @@ export default function EditOverlayButton( { navRef } ) {
 			return findNavigationBlock( block.innerBlocks );
 		}
 		return null;
-	}
-
-	function goToOverlayEditor( overlayId ) {
-		history.push( {
-			postId: overlayId,
-			postType: 'wp_template_part',
-			canvas: 'edit',
-		} );
 	}
 
 	async function handleEditOverlay( event ) {
@@ -97,22 +75,24 @@ export default function EditOverlayButton( { navRef } ) {
 
 		// No custom overoverlay - create one from base template.
 		// TODO: catch and handle errors.
-		const overlayBlocks = buildOverlayBlocks( baseOverlay, navRef );
+		const overlayBlocks = buildOverlayBlocks(
+			baseOverlay.content.raw,
+			navRef
+		);
 		const newOverlay = await createCustomOverlay( overlayBlocks );
 
 		goToOverlayEditor( newOverlay?.id );
-		return;
 	}
 
-	function buildOverlayBlocks( baseOverlay, navRef ) {
-		const parsedBlocks = parse( baseOverlay.content.raw );
+	function buildOverlayBlocks( content, parentNavRef ) {
+		const parsedBlocks = parse( content );
 		const overlayNavBlock = findNavigationBlock( parsedBlocks );
 
 		// Update the Navigation block in the overlay to use
 		// the same ref as the parent block.
 		// Todo: what happens if ref doesn't exist?
 		// Should we copy the uncontrolled inner blocks?
-		overlayNavBlock.attributes.ref = navRef;
+		overlayNavBlock.attributes.ref = parentNavRef;
 		return parsedBlocks;
 	}
 
