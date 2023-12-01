@@ -403,11 +403,7 @@ class WP_Navigation_Block_Renderer {
 
 		$is_hidden_by_default = isset( $attributes['overlayMenu'] ) && 'always' === $attributes['overlayMenu'];
 
-		$responsive_container_classes = array(
-			'wp-block-navigation__responsive-container',
-			$is_hidden_by_default ? 'hidden-by-default' : '',
-			implode( ' ', $colors['overlay_css_classes'] ),
-		);
+
 		$open_button_classes          = array(
 			'wp-block-navigation__responsive-container-open',
 			$is_hidden_by_default ? 'always-shown' : '',
@@ -457,11 +453,20 @@ class WP_Navigation_Block_Renderer {
 
 		$custom_overlay_html = static::get_custom_overlay_blocks_html( $attributes );
 
-		if ( ! empty( $custom_overlay_html ) ) {
+		$has_custom_overlay = ! empty( $custom_overlay_html );
+
+		if ( $has_custom_overlay ) {
 			$custom_overlay_inner_blocks = '<div class="wp-block-navigation__overlay">' . $custom_overlay_html . '</div>';
 		} else {
 			$custom_overlay_inner_blocks = '';
 		}
+
+		$responsive_container_classes = array(
+			'wp-block-navigation__responsive-container',
+			$is_hidden_by_default ? 'hidden-by-default' : '',
+			$has_custom_overlay ? 'has-custom-overlay' : '',
+			implode( ' ', $colors['overlay_css_classes'] ),
+		);
 
 		return sprintf(
 			'<button aria-haspopup="dialog" %3$s class="%6$s" %10$s>%8$s</button>
