@@ -685,13 +685,17 @@ function Navigation( {
 							},
 							{
 								colorValue: overlayTextColor.color,
-								label: __( 'Submenu & overlay text' ),
+								label: hasCustomOverlay
+									? __( 'Submenu text' )
+									: __( 'Submenu & overlay text' ),
 								onColorChange: setOverlayTextColor,
 								resetAllFilter: () => setOverlayTextColor(),
 							},
 							{
 								colorValue: overlayBackgroundColor.color,
-								label: __( 'Submenu & overlay background' ),
+								label: hasCustomOverlay
+									? __( 'Submenu background' )
+									: __( 'Submenu & overlay background' ),
 								onColorChange: setOverlayBackgroundColor,
 								resetAllFilter: () =>
 									setOverlayBackgroundColor(),
