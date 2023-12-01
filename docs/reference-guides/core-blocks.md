@@ -473,6 +473,15 @@ Add a page, link, or another item to your navigation. ([Source](https://github.c
 -	**Supports:** typography (fontSize, lineHeight), ~~html~~, ~~renaming~~, ~~reusable~~
 -	**Attributes:** description, id, isTopLevelLink, kind, label, opensInNewTab, rel, title, type, url
 
+## Navigation Overlay Close
+
+Add a Close button to your Navigation Overlay. ([Source](https://github.com/WordPress/gutenberg/tree/trunk/packages/block-library/src/navigation-overlay-close))
+
+-	**Name:** core/navigation-overlay-close
+-	**Category:** design
+-	**Supports:** align (center, left, right), anchor, color (background, text, ~~link~~), dimensions (height, width), interactivity, spacing (margin, padding, units), ~~html~~, ~~reusable~~
+-	**Attributes:** hasIcon
+
 ## Submenu
 
 Add a submenu to your navigation. ([Source](https://github.com/WordPress/gutenberg/tree/trunk/packages/block-library/src/navigation-submenu))
