@@ -649,11 +649,14 @@ button.wp-block-navigation-item__content {
 	.wp-block-navigation__responsive-close,
 	.wp-block-navigation__responsive-dialog,
 	.wp-block-navigation__responsive-container-content,
-	.wp-block-navigation__overlay,
-	.wp-block-navigation__overlay > .wp-block-group { // force first block to occupy all the space.
+	.wp-block-navigation__overlay {
 		display: flex;
 		flex-direction: column;
 		flex-grow: 1;
+	}
+
+	.wp-block-navigation__overlay > .wp-block-group {
+		flex-grow: 1; // force first block to occupy all the space.
 	}
 
 	.wp-block-navigation__responsive-close {
