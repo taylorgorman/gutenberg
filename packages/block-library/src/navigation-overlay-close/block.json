@@ -20,6 +20,7 @@
 		"customBackgroundColor"
 	],
 	"supports": {
+		"multiple": false,
 		"reusable": false,
 		"html": false,
 		"dimensions": {
@@ -32,7 +33,6 @@
 			"background": true
 		},
 		"interactivity": true,
-		"align": [ "left", "center", "right" ],
 		"anchor": true,
 		"spacing": {
 			"margin": true,

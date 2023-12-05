@@ -479,7 +479,7 @@ Add a Close button to your Navigation Overlay. ([Source](https://github.com/Word
 
 -	**Name:** core/navigation-overlay-close
 -	**Category:** design
--	**Supports:** align (center, left, right), anchor, color (background, text, ~~link~~), dimensions (height, width), interactivity, spacing (margin, padding, units), ~~html~~, ~~reusable~~
+-	**Supports:** anchor, color (background, text, ~~link~~), dimensions (height, width), interactivity, spacing (margin, padding, units), ~~html~~, ~~multiple~~, ~~reusable~~
 -	**Attributes:** hasIcon
 
 ## Submenu
