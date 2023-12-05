@@ -455,11 +455,7 @@ class WP_Navigation_Block_Renderer {
 
 		$has_custom_overlay = ! empty( $custom_overlay_html );
 
-		if ( $has_custom_overlay ) {
-			$custom_overlay_inner_blocks = '<div class="wp-block-navigation__overlay">' . $custom_overlay_html . '</div>';
-		} else {
-			$custom_overlay_inner_blocks = '';
-		}
+		$custom_overlay = $has_custom_overlay ? '<div class="wp-block-navigation__overlay">' . $custom_overlay_html . '</div>' : '';
 
 		$responsive_container_classes = array(
 			'wp-block-navigation__responsive-container',
@@ -468,17 +464,26 @@ class WP_Navigation_Block_Renderer {
 			implode( ' ', $colors['overlay_css_classes'] ),
 		);
 
+		// Only render a close button if there is not a Custom Overlay. Custom overlays should provide their
+		// own close button via a block within the overlay contents.
+		$close_btn = $has_custom_overlay ? '' : sprintf(
+			'<button %1$s class="wp-block-navigation__responsive-container-close" %3$s>%2$s</button>',
+			$toggle_aria_label_close,
+			$toggle_close_button_content,
+			$close_button_directives,
+		);
+
 		return sprintf(
 			'<button aria-haspopup="dialog" %3$s class="%6$s" %10$s>%8$s</button>
 				<div class="%5$s" style="%7$s" id="%1$s" %11$s>
 					<div class="wp-block-navigation__responsive-close" tabindex="-1">
 						<div class="wp-block-navigation__responsive-dialog" %12$s>
-							<button %4$s class="wp-block-navigation__responsive-container-close" %13$s>%9$s</button>
+							%4$s
 							<div class="wp-block-navigation__responsive-container-content" id="%1$s-content">
 								<div class="wp-block-navigation__default">
 									%2$s
 								</div>
-								%14$s
+								%13$s
 							</div>
 						</div>
 					</div>
@@ -486,7 +491,7 @@ class WP_Navigation_Block_Renderer {
 			esc_attr( $modal_unique_id ),
 			$inner_blocks_html,
 			$toggle_aria_label_open,
-			$toggle_aria_label_close,
+			$close_btn,
 			esc_attr( implode( ' ', $responsive_container_classes ) ),
 			esc_attr( implode( ' ', $open_button_classes ) ),
 			esc_attr( safecss_filter_attr( $colors['overlay_inline_styles'] ) ),
@@ -495,8 +500,7 @@ class WP_Navigation_Block_Renderer {
 			$open_button_directives,
 			$responsive_container_directives,
 			$responsive_dialog_directives,
-			$close_button_directives,
-			$custom_overlay_inner_blocks
+			$custom_overlay
 		);
 	}
 
