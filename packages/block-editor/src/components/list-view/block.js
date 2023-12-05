@@ -38,6 +38,7 @@ import AriaReferencedText from './aria-referenced-text';
 function ListViewBlock( {
 	block: { clientId },
 	displacement,
+	isAfterDraggedBlocks,
 	isDragged,
 	isNesting,
 	isSelected,
@@ -210,6 +211,7 @@ function ListViewBlock( {
 		'is-synced': blockInformation?.isSynced,
 		'is-displacement-up': displacement === 'up',
 		'is-displacement-down': displacement === 'down',
+		'is-after-dragged-blocks': isAfterDraggedBlocks,
 		'is-nesting': isNesting,
 	} );
 
