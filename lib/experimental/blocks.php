@@ -245,13 +245,15 @@ function add_default_navigation_overlay_template_part( $block_template, $id, $te
 	$template->id             = $theme . '//' . 'navigation-overlay';
 	$template->theme          = $theme;
 	$template->slug           = 'navigation-overlay';
-	$template->source         = 'core';
-	$template->type           = 'template-part';
+	$template->source         = 'custom';
+	$template->type           = 'wp_template_part';
 	$template->title          = 'Navigation Overlay';
 	$template->status         = 'publish';
-	$template->has_theme_file = false;
+	$template->has_theme_file = null;
 	$template->is_custom      = false;
 	$template->modified       = null;
+	$template->origin         = null;
+	$template->author         = null;
 
 	// The content is the default Navigation Overlay template part. This will only be used
 	// if the Theme does not provide a template part for the Navigation Overlay.
