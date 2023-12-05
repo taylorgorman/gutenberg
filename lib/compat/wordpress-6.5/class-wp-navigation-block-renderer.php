@@ -417,6 +417,10 @@ class WP_Navigation_Block_Renderer {
 			}
 		}
 		$toggle_button_content       = $should_display_icon_label ? $toggle_button_icon : __( 'Menu' );
+
+		// This icon is duplicated in the Navigation Overlay Close block.
+		// See packages/block-library/src/navigation-overlay-close/index.php.
+		// Changes to this icon should be reflected there as well.
 		$toggle_close_button_icon    = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M13 11.8l6.1-6.3-1-1-6.1 6.2-6.1-6.2-1 1 6.1 6.3-6.5 6.7 1 1 6.5-6.6 6.5 6.6 1-1z"></path></svg>';
 		$toggle_close_button_content = $should_display_icon_label ? $toggle_close_button_icon : __( 'Close' );
 		$toggle_aria_label_open      = $should_display_icon_label ? 'aria-label="' . __( 'Open menu' ) . '"' : ''; // Open button label.
@@ -427,6 +431,7 @@ class WP_Navigation_Block_Renderer {
 		$responsive_container_directives = '';
 		$responsive_dialog_directives    = '';
 		$close_button_directives         = '';
+
 		if ( $should_load_view_script ) {
 			$open_button_directives          = '
 				data-wp-on--click="actions.openMenuOnClick"
@@ -446,6 +451,10 @@ class WP_Navigation_Block_Renderer {
 				data-wp-bind--role="state.roleAttribute"
 				data-wp-watch="callbacks.focusFirstElement"
 			';
+
+			// This directive is duplicated in the Navigation Overlay Close block.
+			// See packages/block-library/src/navigation-overlay-close/index.php.
+			// Changes to this directive should be reflected there as well.
 			$close_button_directives         = '
 				data-wp-on--click="actions.closeMenuOnClick"
 			';
