@@ -53,13 +53,20 @@ export default function EditOverlayButton( { navRef } ) {
 	const goToOverlayEditor = useGoToOverlayEditor();
 
 	function findNavigationBlock( blocks ) {
-		const block = blocks[ 0 ];
-		if ( block.name === 'core/navigation' ) {
-			return block;
+		for ( const block of blocks ) {
+			if ( block.name === 'core/navigation' ) {
+				return block;
+			}
+
+			// If this block has inner blocks, recurse.
+			if ( block.innerBlocks.length ) {
+				const innerBlock = findNavigationBlock( block.innerBlocks );
+				if ( innerBlock ) {
+					return innerBlock;
+				}
+			}
 		}
-		if ( block.innerBlocks.length ) {
-			return findNavigationBlock( block.innerBlocks );
-		}
+
 		return null;
 	}
 
