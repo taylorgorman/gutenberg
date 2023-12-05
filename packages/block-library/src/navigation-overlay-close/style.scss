@@ -4,6 +4,7 @@ $navigation-icon-size: 24px;
 
 // Menu and close buttons.
 .wp-block-navigation-overlay-close {
+	height: auto; // remove default height applied to button component
 	vertical-align: middle;
 	cursor: pointer;
 	border: none;
@@ -11,6 +12,8 @@ $navigation-icon-size: 24px;
 	padding: 0;
 	text-transform: inherit;
 	z-index: 2; // Needs to be above the modal z index itself.
+	background-color: inherit; // remove user agent stylesheet default.
+	color: inherit; // remove user agent stylesheet default.
 
 	// When set to collapse into a text button, it should inherit the parent font.
 	// This needs specificity to override inherited properties by the button element and component.
