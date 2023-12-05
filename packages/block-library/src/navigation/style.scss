@@ -796,7 +796,7 @@ html.has-modal-open {
 	height: 100%; // fill the overlay
 }
 
-.is-menu-open {
+.is-menu-open.has-custom-overlay {
 	.wp-block-navigation__overlay {
 		display: initial;
 	}
