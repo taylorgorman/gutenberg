@@ -6,7 +6,7 @@
 	"category": "design",
 	"description": "Add a Close button to your Navigation Overlay.",
 	"textdomain": "default",
-	"icon": "closeSmall",
+	"icon": "dismiss",
 	"attributes": {
 		"hasIcon": {
 			"type": "boolean",
