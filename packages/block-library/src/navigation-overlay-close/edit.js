@@ -10,6 +10,8 @@ export default function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps();
 	const { hasIcon } = attributes;
 
+	const closeText = __( 'Close' );
+
 	return (
 		<>
 			<InspectorControls>
@@ -27,11 +29,8 @@ export default function Edit( { attributes, setAttributes } ) {
 					/>
 				</PanelBody>
 			</InspectorControls>
-			<Button
-				{ ...blockProps }
-				aria-label={ hasIcon && __( 'Close menu' ) }
-			>
-				{ hasIcon ? <Icon icon={ close } /> : __( 'Close' ) }
+			<Button { ...blockProps } aria-label={ hasIcon && closeText }>
+				{ hasIcon ? <Icon icon={ close } /> : closeText }
 			</Button>
 		</>
 	);
