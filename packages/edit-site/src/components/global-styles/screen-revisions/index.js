@@ -129,7 +129,6 @@ function ScreenRevisions() {
 	// Only display load button if there is a revision to load and it is different from the current editor styles.
 	const isLoadButtonEnabled =
 		!! currentlySelectedRevisionId && ! selectedRevisionMatchesEditorStyles;
-	const shouldShowRevisions = ! isLoading && revisions.length;
 
 	return (
 		<>
@@ -148,74 +147,72 @@ function ScreenRevisions() {
 			{ isLoading && (
 				<Spinner className="edit-site-global-styles-screen-revisions__loading" />
 			) }
-			{ shouldShowRevisions ? (
-				<>
-					<Revisions
-						blocks={ blocks }
-						userConfig={ currentlySelectedRevision }
-						onClose={ onCloseRevisions }
+			<>
+				<Revisions
+					blocks={ blocks }
+					userConfig={ currentlySelectedRevision }
+					onClose={ onCloseRevisions }
+				/>
+				<div className="edit-site-global-styles-screen-revisions">
+					<RevisionsButtons
+						onChange={ selectRevision }
+						selectedRevisionId={ currentlySelectedRevisionId }
+						userRevisions={ revisions }
 					/>
-					<div className="edit-site-global-styles-screen-revisions">
-						<RevisionsButtons
-							onChange={ selectRevision }
-							selectedRevisionId={ currentlySelectedRevisionId }
-							userRevisions={ revisions }
+					{ numPages > 1 && (
+						<Pagination
+							currentPage={ currentPage }
+							numPages={ numPages }
+							changePage={ setCurrentPage }
+							totalItems={ revisionsCount }
 						/>
-						{ numPages > 1 && (
-							<Pagination
-								currentPage={ currentPage }
-								numPages={ numPages }
-								changePage={ setCurrentPage }
-								totalItems={ revisionsCount }
-							/>
-						) }
-						{ isLoadButtonEnabled && (
-							<SidebarFixedBottom>
-								<Button
-									variant="primary"
-									className="edit-site-global-styles-screen-revisions__button"
-									disabled={
-										! currentlySelectedRevisionId ||
-										currentlySelectedRevisionId ===
-											'unsaved'
-									}
-									onClick={ () => {
-										if ( hasUnsavedChanges ) {
-											setIsLoadingRevisionWithUnsavedChanges(
-												true
-											);
-										} else {
-											restoreRevision(
-												currentlySelectedRevision
-											);
-										}
-									} }
-								>
-									{ currentlySelectedRevisionId === 'parent'
-										? __( 'Reset to defaults' )
-										: __( 'Apply' ) }
-								</Button>
-							</SidebarFixedBottom>
-						) }
-					</div>
-					{ isLoadingRevisionWithUnsavedChanges && (
-						<ConfirmDialog
-							isOpen={ isLoadingRevisionWithUnsavedChanges }
-							confirmButtonText={ __( 'Apply' ) }
-							onConfirm={ () =>
-								restoreRevision( currentlySelectedRevision )
-							}
-							onCancel={ () =>
-								setIsLoadingRevisionWithUnsavedChanges( false )
-							}
-						>
-							{ __(
-								'Any unsaved changes will be lost when you apply this revision.'
-							) }
-						</ConfirmDialog>
 					) }
-				</>
-			) : (
+					{ isLoadButtonEnabled && (
+						<SidebarFixedBottom>
+							<Button
+								variant="primary"
+								className="edit-site-global-styles-screen-revisions__button"
+								disabled={
+									! currentlySelectedRevisionId ||
+									currentlySelectedRevisionId === 'unsaved'
+								}
+								onClick={ () => {
+									if ( hasUnsavedChanges ) {
+										setIsLoadingRevisionWithUnsavedChanges(
+											true
+										);
+									} else {
+										restoreRevision(
+											currentlySelectedRevision
+										);
+									}
+								} }
+							>
+								{ currentlySelectedRevisionId === 'parent'
+									? __( 'Reset to defaults' )
+									: __( 'Apply' ) }
+							</Button>
+						</SidebarFixedBottom>
+					) }
+				</div>
+				{ isLoadingRevisionWithUnsavedChanges && (
+					<ConfirmDialog
+						isOpen={ isLoadingRevisionWithUnsavedChanges }
+						confirmButtonText={ __( 'Apply' ) }
+						onConfirm={ () =>
+							restoreRevision( currentlySelectedRevision )
+						}
+						onCancel={ () =>
+							setIsLoadingRevisionWithUnsavedChanges( false )
+						}
+					>
+						{ __(
+							'Any unsaved changes will be lost when you apply this revision.'
+						) }
+					</ConfirmDialog>
+				) }
+			</>
+			{ ! isLoading && ! revisions.length && (
 				<Spacer marginX={ 4 } data-testid="global-styles-no-revisions">
 					{
 						// Adding an existing translation here in case these changes are shipped to WordPress 6.3.
