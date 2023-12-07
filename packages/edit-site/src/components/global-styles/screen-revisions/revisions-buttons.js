@@ -67,7 +67,13 @@ function getRevisionLabel(
  * @param    {props}         Component          props.
  * @return {JSX.Element} The modal component.
  */
-function RevisionsButtons( { userRevisions, selectedRevisionId, onChange } ) {
+function RevisionsButtons( {
+	userRevisions,
+	selectedRevisionId,
+	onChange,
+	canSelectedRevisionBeRestored,
+	onApplyRevision,
+} ) {
 	const { currentThemeName, currentUser } = useSelect( ( select ) => {
 		const { getCurrentTheme, getCurrentUser } = select( coreStore );
 		const currentTheme = getCurrentTheme();
@@ -78,7 +84,7 @@ function RevisionsButtons( { userRevisions, selectedRevisionId, onChange } ) {
 		};
 	}, [] );
 	const dateNowInMs = getDate().getTime();
-	const { date: dateFormat, datetimeAbbreviated } = getSettings().formats;
+	const { datetimeAbbreviated } = getSettings().formats;
 
 	return (
 		<ol
@@ -96,18 +102,23 @@ function RevisionsButtons( { userRevisions, selectedRevisionId, onChange } ) {
 				const isSelected = selectedRevisionId
 					? selectedRevisionId === id
 					: index === 0;
-				const isReset = 'parent' === id;
+				const isParent = 'parent' === id;
+				const isReset = isParent;
 				const modifiedDate = getDate( modified );
+				const formattedModifiedDate = dateI18n(
+					datetimeAbbreviated,
+					modifiedDate
+				);
 				const displayDate =
 					modified &&
 					dateNowInMs - modifiedDate.getTime() > DAY_IN_MILLISECONDS
-						? dateI18n( dateFormat, modifiedDate )
+						? formattedModifiedDate
 						: humanTimeDiff( modified );
 				const revisionLabel = getRevisionLabel(
 					id,
 					isLatest,
 					authorDisplayName,
-					dateI18n( datetimeAbbreviated, modifiedDate )
+					formattedModifiedDate
 				);
 
 				return (
@@ -160,6 +171,17 @@ function RevisionsButtons( { userRevisions, selectedRevisionId, onChange } ) {
 								</span>
 							) }
 						</Button>
+						{ isSelected && canSelectedRevisionBeRestored && (
+							<Button
+								variant="primary"
+								className="edit-site-global-styles-screen-revisions__button"
+								onClick={ onApplyRevision }
+							>
+								{ isParent
+									? __( 'Reset to defaults' )
+									: __( 'Apply' ) }
+							</Button>
+						) }
 					</li>
 				);
 			} ) }

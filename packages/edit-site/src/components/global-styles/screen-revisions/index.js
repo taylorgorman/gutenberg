@@ -7,10 +7,8 @@ import {
 	__experimentalUseNavigator as useNavigator,
 	__experimentalConfirmDialog as ConfirmDialog,
 	Spinner,
-	__experimentalSpacer as Spacer,
 } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { store as coreStore } from '@wordpress/core-data';
 import { useContext, useState, useEffect } from '@wordpress/element';
 import {
 	privateApis as blockEditorPrivateApis,
@@ -126,7 +124,8 @@ function ScreenRevisions() {
 		}
 	}, [ shouldSelectFirstItem, firstRevision ] );
 
-	// Only display load button if there is a revision to load and it is different from the current editor styles.
+	// Only display load button if there is a revision to load, and
+	// it is different from the current editor styles.
 	const isLoadButtonEnabled =
 		!! currentlySelectedRevisionId && ! selectedRevisionMatchesEditorStyles;
 
@@ -158,40 +157,23 @@ function ScreenRevisions() {
 						onChange={ selectRevision }
 						selectedRevisionId={ currentlySelectedRevisionId }
 						userRevisions={ revisions }
+						canSelectedRevisionBeRestored={ isLoadButtonEnabled }
+						onApplyRevision={ () => {
+							if ( hasUnsavedChanges ) {
+								setIsLoadingRevisionWithUnsavedChanges( true );
+							} else {
+								restoreRevision( currentlySelectedRevision );
+							}
+						} }
 					/>
 					{ numPages > 1 && (
-						<Pagination
-							currentPage={ currentPage }
-							numPages={ numPages }
-							changePage={ setCurrentPage }
-							totalItems={ revisionsCount }
-						/>
-					) }
-					{ isLoadButtonEnabled && (
 						<SidebarFixedBottom>
-							<Button
-								variant="primary"
-								className="edit-site-global-styles-screen-revisions__button"
-								disabled={
-									! currentlySelectedRevisionId ||
-									currentlySelectedRevisionId === 'unsaved'
-								}
-								onClick={ () => {
-									if ( hasUnsavedChanges ) {
-										setIsLoadingRevisionWithUnsavedChanges(
-											true
-										);
-									} else {
-										restoreRevision(
-											currentlySelectedRevision
-										);
-									}
-								} }
-							>
-								{ currentlySelectedRevisionId === 'parent'
-									? __( 'Reset to defaults' )
-									: __( 'Apply' ) }
-							</Button>
+							<Pagination
+								currentPage={ currentPage }
+								numPages={ numPages }
+								changePage={ setCurrentPage }
+								totalItems={ revisionsCount }
+							/>
 						</SidebarFixedBottom>
 					) }
 				</div>
@@ -212,15 +194,6 @@ function ScreenRevisions() {
 					</ConfirmDialog>
 				) }
 			</>
-			{ ! isLoading && ! revisions.length && (
-				<Spacer marginX={ 4 } data-testid="global-styles-no-revisions">
-					{
-						// Adding an existing translation here in case these changes are shipped to WordPress 6.3.
-						// Later we could update to something better, e.g., "There are currently no style revisions.".
-						__( 'No results found.' )
-					}
-				</Spacer>
-			) }
 		</>
 	);
 }
