@@ -150,22 +150,44 @@ export default function useBlockDropZone( {
 		operation: 'insert',
 	} );
 
-	const isDisabled = useSelect(
+	const { isDisabled, allowedBlocks, draggedBlockNames } = useSelect(
 		( select ) => {
 			const {
 				__unstableIsWithinBlockOverlay,
 				__unstableHasActiveBlockOverlayActive,
 				getBlockEditingMode,
+				getDraggedBlockClientIds,
+				getBlockNamesByClientId,
+				getAllowedBlocks,
 			} = select( blockEditorStore );
+
 			const blockEditingMode = getBlockEditingMode( targetRootClientId );
-			return (
-				blockEditingMode !== 'default' ||
-				__unstableHasActiveBlockOverlayActive( targetRootClientId ) ||
-				__unstableIsWithinBlockOverlay( targetRootClientId )
-			);
+			return {
+				isDisabled:
+					blockEditingMode !== 'default' ||
+					__unstableHasActiveBlockOverlayActive(
+						targetRootClientId
+					) ||
+					__unstableIsWithinBlockOverlay( targetRootClientId ),
+				allowedBlocks: getAllowedBlocks( targetRootClientId ),
+				draggedBlockNames: getBlockNamesByClientId(
+					getDraggedBlockClientIds()
+				),
+			};
 		},
 		[ targetRootClientId ]
 	);
+
+	// At root level allowedBlocks is undefined and all blocks are allowed.
+	// Otherwise, check if all dragged blocks are allowed.
+	let areBlocksAllowed = true;
+	if ( allowedBlocks ) {
+		const allowedBlockNames = allowedBlocks?.map( ( { name } ) => name );
+
+		areBlocksAllowed = draggedBlockNames.every( ( name ) =>
+			allowedBlockNames?.includes( name )
+		);
+	}
 
 	const { getBlockListSettings, getBlocks, getBlockIndex } =
 		useSelect( blockEditorStore );
@@ -238,7 +260,7 @@ export default function useBlockDropZone( {
 
 	return useDropZone( {
 		dropZoneElement,
-		isDisabled,
+		isDisabled: isDisabled || ! areBlocksAllowed,
 		onDrop: onBlockDrop,
 		onDragOver( event ) {
 			// `currentTarget` is only available while the event is being
