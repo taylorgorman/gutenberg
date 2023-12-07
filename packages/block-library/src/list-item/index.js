@@ -6,7 +6,7 @@ import { listItem as icon } from '@wordpress/icons';
 /**
  * Internal dependencies
  */
-import lazyLoad from '../utils/lazy-load';
+import edit from './edit';
 import initBlock from '../utils/init-block';
 import metadata from './block.json';
 
@@ -19,9 +19,7 @@ export { metadata, name };
 
 export const settings = {
 	icon,
-	edit: lazyLoad( () =>
-		import( /* webpackChunkName: "list-item/editor" */ './edit' )
-	),
+	edit,
 	save,
 	merge( attributes, attributesToMerge ) {
 		return {
